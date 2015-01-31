@@ -31,11 +31,13 @@ function gravatar_install() {
   $gravatar_config->set('gravatar_toggle', NULL);
   $gravatar_config->set('gravatar_disabled_by_users', NULL);
   $gravatar_config->set('gravatar_prepend', NULL);
+  $gravatar_config->save();
 
   $gravatar_user = config('gravatar_user.settings');
   $gravatar_user->set('user_pictures', 0);
   $gravatar_user->set('user_picture_style', '');
   $gravatar_user->set('user_picture_default', '');
+  $gravatar_user->save();
 }
 
 /**
