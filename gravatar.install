@@ -16,6 +16,29 @@ function gravatar_schema() {
 }
 
 /**
+ * Implements hook_install().
+ */
+function gravatar_install() {
+  $gravatar_config = config('gravatar_config.settings');
+  $gravatar_config->set('gravatar_default', 2);
+  $gravatar_config->set('gravatar_size', 100);
+  $gravatar_config->set('gravatar_rating', 'G');
+  $gravatar_config->set('gravatar_url', 'http://www.gravatar.com/avatar/');
+  $gravatar_config->set('gravatar_url_ssl', 'https://secure.gravatar.com/avatar/');
+  $gravatar_config->set('gravatar_cache', 0);
+  $gravatar_config->set('gravatar_default_type', NULL);
+  $gravatar_config->set('gravatar_imagerating', NULL);
+  $gravatar_config->set('gravatar_toggle', NULL);
+  $gravatar_config->set('gravatar_disabled_by_users', NULL);
+  $gravatar_config->set('gravatar_prepend', NULL);
+
+  $gravatar_user = config('gravatar_user.settings');
+  $gravatar_user->set('user_pictures', 0);
+  $gravatar_user->set('user_picture_style', '');
+  $gravatar_user->set('user_picture_default', '');
+}
+
+/**
  * Implementation of hook_uninstall().
  */
 function gravatar_uninstall() {

@@ -118,6 +118,21 @@ function gravatar_menu() {
 }
 
 /**
+ * Implements hook_config_info().
+ */
+function gravatar_config_info() {
+  $prefixes['gravatar_config.settings'] = array(
+    'label' => t('Gravatar main configuration'),
+    'group' => t('Gravatar'),
+  );
+  $prefixes['gravatar_user.settings'] = array(
+    'label' => t('Gravatar users configuration'),
+    'group' => t('Gravatar'),
+  );
+  return $prefixes;
+}
+
+/**
  * Override template_preprocess_user_picture() to display user pictures with
  * Gravatar integration.
  *
@@ -128,7 +143,7 @@ function gravatar_menu() {
 function gravatar_preprocess_user_picture(&$variables) {
   $variables['user_picture'] = '';
 
-  if (variable_get('user_pictures', 0)) {
+  if (config_get('gravatar_user.settings', 'user_pictures')) {
     // Load the full user object since it is not provided with nodes, comments,
     // or views displays.
     $account = _gravatar_load_account($variables['account']);
@@ -136,7 +151,7 @@ function gravatar_preprocess_user_picture(&$variables) {
 
     if (!empty($filepath)) {
       $alt = t("@user's picture", array('@user' => format_username($account)));
-      if (module_exists('image') && file_valid_uri($filepath) && $style = variable_get('user_picture_style', '')) {
+      if (module_exists('image') && file_valid_uri($filepath) && $style = config_get('gravatar_user.settings', 'user_picture_style')) {
         $variables['user_picture'] = theme('image_style', array('style_name' => $style, 'path' => $filepath, 'alt' => $alt, 'title' => $alt));
       }
       else {
@@ -175,7 +190,7 @@ function _gravatar_get_account_user_picture($account) {
   elseif (!user_access('use gravatar', $account) || (user_access('disable own gravatar', $account) && isset($account->data['gravatar']) && !$account->data['gravatar'])) {
     // If the user does not have access to use gravatars or has gravatars
     // disabled for their account, use the global default image.
-    return variable_get('user_picture_default', '');
+    return config_get('gravatar_user.settings', 'user_picture_default');
   }
   else {
     // Otherwise, show a gravatar with the appropraite default picture.
@@ -246,7 +261,7 @@ function gravatar_form_comment_form_alter(&$form, $form_state) {
  * @todo Improve message shown to user.
  */
 function gravatar_form_user_profile_form_alter(&$form, $form_state) {
-  if ($form['#user_category'] == 'account' && isset($form['picture']) && variable_get('user_pictures', 0) && ($account = $form['#user']) && user_access('use gravatar', $account)) {
+  if ($form['#user_category'] == 'account' && isset($form['picture']) && config_get('gravatar_user.settings', 'user_pictures') && ($account = $form['#user']) && user_access('use gravatar', $account)) {
     // Add the default user picture preview.
     if (!isset($form['picture']['picture_current']) && ($picture = theme('user_picture', array('account' => $account)))) {
       $form['picture']['picture_current'] = array(
@@ -311,8 +326,8 @@ function gravatar_get_gravatar($mail, $options = array()) {
   // Merge default options.
   $options += array(
     'default' => _gravatar_get_default_image(gravatar_var('default')),
-    'size' => min(max(0, variable_get('gravatar_size', 100)), GRAVATAR_SIZE_MAX),
-    'rating' => variable_get('gravatar_rating', 'G'),
+    'size' => min(max(0, config_get('gravatar_config.settings', 'gravatar_size')), GRAVATAR_SIZE_MAX),
+    'rating' => config_get('gravatar_config.settings', 'gravatar_rating'),
     'cache' => FALSE,
     'force default' => FALSE,
   );
@@ -330,7 +345,7 @@ function gravatar_get_gravatar($mail, $options = array()) {
   //  }
   //}
 
-  $gravatar = $is_https ? variable_get('gravatar_url_ssl', GRAVATAR_URL_SSL) : variable_get('gravatar_url', GRAVATAR_URL);
+  $gravatar = $is_https ? config_get('gravatar_config.settings', 'gravatar_url_ssl') : config_get('gravatar_config.settings', 'gravatar_url');
   $gravatar .= $hash . '.jpg';
   $query = array(
     'd' => $options['default'],
@@ -357,7 +372,7 @@ function _gravatar_get_default_image($index) {
   if (!isset($defaults[$index])) {
     switch ($index) {
       case GRAVATAR_DEFAULT_GLOBAL:
-        $default = variable_get('user_picture_default', '');
+        $default = config_get('gravatar_user.settings', 'user_picture_default');
         if ($default && !valid_url($default, TRUE)) {
           // Convert a relative global default picture URL to an absolute URL.
           $default = file_create_url($default);
@@ -451,5 +466,5 @@ function gravatar_var($name, $default = NULL) {
     trigger_error('Default variable for ' . drupal_placeholder($name) . ' not found.');
   }
 
-  return variable_get($name, isset($default) || !isset($defaults[$name]) ? $default : $defaults[$name]);
+  return config_get('gravatar_config.settings', $name);
 }

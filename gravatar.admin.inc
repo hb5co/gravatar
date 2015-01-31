@@ -12,6 +12,9 @@
  * @see system_settings_form()
  */
 function gravatar_admin_settings($form, $form_state) {
+  // Load Gravatar current config.
+  $gravatar_config = config('gravatar_config.settings');
+
   $form['gravatar_default'] = array(
     '#type' => 'radios',
     '#title' => t('Default image'),
@@ -27,7 +30,7 @@ function gravatar_admin_settings($form, $form_state) {
       GRAVATAR_DEFAULT_WAVATAR => t('Gravatar.com wavatar (generated)'),
       GRAVATAR_DEFAULT_RETRO => t('Gravatar.com retro 8-bit arcade-style pixelated faces (generated)'),
     ),
-    '#default_value' => variable_get('gravatar_default', GRAVATAR_DEFAULT_MODULE),
+    '#default_value' => $gravatar_config->get('gravatar_default'),
     '#field_prefix' => '<div class="picture js-show">' . theme('image', array('path' => '', 'alt' => t('Default picture example'), 'title' => t('Default picture example'), 'attributes' => array('id' => 'gravatar-imagepreview'), 'getsize' => FALSE)) . '</div>',
     '#process' => array('form_process_radios', 'gravatar_process_default_setting'),
   );
@@ -35,7 +38,7 @@ function gravatar_admin_settings($form, $form_state) {
     '#type' => 'textfield',
     '#title' => t('Gravatar size'),
     '#description' => t('The preferred image size for Gravatars (maximum @max pixels).', array('@max' => GRAVATAR_SIZE_MAX)),
-    '#default_value' => variable_get('gravatar_size', 100),
+    '#default_value' => $gravatar_config->get('gravatar_size'),
     '#size' => 3,
     '#maxlength' => 3,
     '#element_validate' => array('_element_validate_integer'),
@@ -50,7 +53,7 @@ function gravatar_admin_settings($form, $form_state) {
       t('X: May contain hardcore sexual imagery or extremely disturbing violence.'),
     ))),
     '#options' => drupal_map_assoc(array('G', 'PG', 'R', 'X')),
-    '#default_value' => variable_get('gravatar_rating', 'G'),
+    '#default_value' => $gravatar_config->get('gravatar_rating'),
   );
 
   // Add JavaScript and CSS to swap the defalut image previews.
@@ -68,15 +71,34 @@ function gravatar_admin_settings($form, $form_state) {
   $form['advanced']['gravatar_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Gravatar URL'),
-    '#default_value' => variable_get('gravatar_url', GRAVATAR_URL),
+    '#default_value' => $gravatar_config->get('gravatar_url'),
   );
   $form['advanced']['gravatar_url_ssl'] = array(
     '#type' => 'textfield',
     '#title' => t('Gravatar secure URL'),
-    '#default_value' => variable_get('gravatar_url_ssl', GRAVATAR_URL_SSL),
+    '#default_value' => $gravatar_config->get('gravatar_url_ssl'),
   );
 
-  return system_settings_form($form);
+  // Add a submit button
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
+}
+
+/**
+ *
+ */
+function gravatar_admin_settings_form_submit($form, &$form_state) {
+  $gravatar_config = config('gravatar_config.settings');
+  $gravatar_config->set('gravatar_default', $form_state['values']['gravatar_default']);
+  $gravatar_config->set('gravatar_size', $form_state['values']['gravatar_size']);
+  $gravatar_config->set('gravatar_rating', $form_state['values']['gravatar_rating']);
+  $gravatar_config->set('gravatar_url', $form_state['values']['advanced']['gravatar_url']);
+  $gravatar_config->set('gravatar_url_ssl', $form_state['values']['advanced']['gravatar_url_ssl']);
 }
 
 /**
@@ -86,7 +108,7 @@ function gravatar_process_default_setting($element) {
   $element[GRAVATAR_DEFAULT_GLOBAL]['#description'] = t('This setting can be adjusted in the <a href="@user-picture-link">user pictures settings</a>.', array('@user-picture-link' => url('admin/config/people/accounts', array('fragment' => 'edit-user-picture-default'))));
 
   // If the global user picture is empty, disable the respective option.
-  if (!variable_get('user_picture_default', '')) {
+  if (!config_get('gravatar_user.settings', 'user_picture_default')) {
     $element[GRAVATAR_DEFAULT_GLOBAL]['#disabled'] = TRUE;
     $element[GRAVATAR_DEFAULT_GLOBAL]['#description'] = t('There currently is not a global default user picture specified.') . ' ' . $element[GRAVATAR_DEFAULT_GLOBAL]['#description'];
   }
