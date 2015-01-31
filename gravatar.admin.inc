@@ -57,7 +57,7 @@ function gravatar_admin_settings($form, $form_state) {
   );
 
   // Add JavaScript and CSS to swap the defalut image previews.
-  $form['#attached']['js'][] = drupal_get_path('module', 'gravatar') . '/gravatar.js';
+  $form['#attached']['js'][] = drupal_get_path('module', 'gravatar') . '/js/gravatar.js';
   $form['#attached']['css'][] = drupal_get_path('module', 'gravatar') . '/gravatar.css';
 
   // Advanced settings.
