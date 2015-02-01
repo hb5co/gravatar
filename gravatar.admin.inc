@@ -51,13 +51,13 @@ function gravatar_admin_settings($form, $form_state) {
       t('R: May contain such things as harsh profanity, intense violence, nudity, or hard drug use.'),
       t('X: May contain hardcore sexual imagery or extremely disturbing violence.'),
     ))),
-    '#options' => drupal_map_assoc(array('G', 'PG', 'R', 'X')),
+    '#options' => backdrop_map_assoc(array('G', 'PG', 'R', 'X')),
     '#default_value' => $gravatar_config->get('gravatar_rating'),
   );
 
   // Add JavaScript and CSS to swap the defalut image previews.
-  $form['#attached']['js'][] = drupal_get_path('module', 'gravatar') . '/js/gravatar.js';
-  $form['#attached']['css'][] = drupal_get_path('module', 'gravatar') . '/gravatar.css';
+  $form['#attached']['js'][] = backdrop_get_path('module', 'gravatar') . '/js/gravatar.js';
+  $form['#attached']['css'][] = backdrop_get_path('module', 'gravatar') . '/gravatar.css';
 
   // Advanced settings.
   $form['advanced'] = array(

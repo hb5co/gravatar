@@ -10,7 +10,7 @@
  * Implementation of hook_schema().
  */
 function gravatar_schema() {
-  $schema['cache_gravatar'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_gravatar'] = backdrop_get_schema_unprocessed('system', 'cache');
   $schema['cache_gravatar']['description'] = t('Cache table for the Gravatar module to store already processed and cached images.');
   return $schema;
 }
@@ -20,7 +20,7 @@ function gravatar_schema() {
  */
 function gravatar_uninstall() {
   // Remove variables.
-  drupal_load('module', 'gravatar');
+  backdrop_load('module', 'gravatar');
   $variables = array_keys(gravatar_variables());
   foreach ($variables as $variable) {
     variable_del($variable);
@@ -30,7 +30,7 @@ function gravatar_uninstall() {
 function gravatar_check_requirements() {
   $requirements = gravatar_requirements('runtime');
   if (!empty($requirements['gravatar'])) {
-    drupal_set_message(t('Please check the following potential issues: !issues', array('!issues' => $requirements['gravatar']['description'])), 'warning', FALSE);
+    backdrop_set_message(t('Please check the following potential issues: !issues', array('!issues' => $requirements['gravatar']['description'])), 'warning', FALSE);
   }
 }
 
@@ -121,7 +121,7 @@ function gravatar_update_6000() {
   }
 
   // Install cache table.
-  drupal_install_schema('gravatar');
+  backdrop_install_schema('gravatar');
 
   return array();
 }
