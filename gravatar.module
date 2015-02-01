@@ -125,10 +125,6 @@ function gravatar_config_info() {
     'label' => t('Gravatar main configuration'),
     'group' => t('Gravatar'),
   );
-  $prefixes['gravatar_user.settings'] = array(
-    'label' => t('Gravatar users configuration'),
-    'group' => t('Gravatar'),
-  );
   return $prefixes;
 }
 
@@ -143,7 +139,7 @@ function gravatar_config_info() {
 function gravatar_preprocess_user_picture(&$variables) {
   $variables['user_picture'] = '';
 
-  if (config_get('gravatar_user.settings', 'user_pictures')) {
+  if (config_get('system.core', 'user_pictures')) {
     // Load the full user object since it is not provided with nodes, comments,
     // or views displays.
     $account = _gravatar_load_account($variables['account']);
@@ -151,7 +147,7 @@ function gravatar_preprocess_user_picture(&$variables) {
 
     if (!empty($filepath)) {
       $alt = t("@user's picture", array('@user' => format_username($account)));
-      if (module_exists('image') && file_valid_uri($filepath) && $style = config_get('gravatar_user.settings', 'user_picture_style')) {
+      if (module_exists('image') && file_valid_uri($filepath) && $style = config_get('system.core', 'user_picture_style')) {
         $variables['user_picture'] = theme('image_style', array('style_name' => $style, 'path' => $filepath, 'alt' => $alt, 'title' => $alt));
       }
       else {
@@ -190,7 +186,7 @@ function _gravatar_get_account_user_picture($account) {
   elseif (!user_access('use gravatar', $account) || (user_access('disable own gravatar', $account) && isset($account->data['gravatar']) && !$account->data['gravatar'])) {
     // If the user does not have access to use gravatars or has gravatars
     // disabled for their account, use the global default image.
-    return config_get('gravatar_user.settings', 'user_picture_default');
+    return config_get('system.core', 'user_picture_default');
   }
   else {
     // Otherwise, show a gravatar with the appropraite default picture.
@@ -372,7 +368,7 @@ function _gravatar_get_default_image($index) {
   if (!isset($defaults[$index])) {
     switch ($index) {
       case GRAVATAR_DEFAULT_GLOBAL:
-        $default = config_get('gravatar_user.settings', 'user_picture_default');
+        $default = config_get('system.core', 'user_picture_default');
         if ($default && !valid_url($default, TRUE)) {
           // Convert a relative global default picture URL to an absolute URL.
           $default = file_create_url($default);

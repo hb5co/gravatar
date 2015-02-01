@@ -43,7 +43,7 @@ function gravatar_requirements($phase) {
 
   if ($phase == 'runtime') {
     // Warn if picture support is disabled.
-    if (!config_get('gravatar_user.settings', 'user_pictures')) {
+    if (!config_get('system.core', 'user_pictures')) {
       $notifications[] = t('Make sure <a href="@user-settings-link">user picture support</a> is enabled to allow gravatar integration.', array('@user-settings-link' => url('admin/config/people/settings', array('fragment' => 'edit-user-pictures-0-wrapper'))));
     }
 

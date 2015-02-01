@@ -122,7 +122,7 @@ function gravatar_process_default_setting($element) {
   $element[GRAVATAR_DEFAULT_GLOBAL]['#description'] = t('This setting can be adjusted in the <a href="@user-picture-link">user pictures settings</a>.', array('@user-picture-link' => url('admin/config/people/accounts', array('fragment' => 'edit-user-picture-default'))));
 
   // If the global user picture is empty, disable the respective option.
-  if (!config_get('gravatar_user.settings', 'user_picture_default')) {
+  if (!config_get('system.core', 'user_picture_default')) {
     $element[GRAVATAR_DEFAULT_GLOBAL]['#disabled'] = TRUE;
     $element[GRAVATAR_DEFAULT_GLOBAL]['#description'] = t('There currently is not a global default user picture specified.') . ' ' . $element[GRAVATAR_DEFAULT_GLOBAL]['#description'];
   }
