@@ -136,7 +136,7 @@ function gravatar_process_default_setting($element) {
       'attributes' => array(
         'id' => 'gravatar-imagepreview-'. $key,
         // Hide the image if the respective option is disabled.
-        'class' => $choice['#disabled'] ? 'hide' : 'js-hide',
+        'class' => !empty($choice['#disabled']) ? 'hide' : 'js-hide',
       ),
       'getsize' => FALSE,
     );
