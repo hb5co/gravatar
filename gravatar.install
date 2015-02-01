@@ -55,13 +55,13 @@ function gravatar_requirements($phase) {
 
     // Warn if user pictures are not enabled in the theme.
     // @todo Stupid theme_get_settings generates errors on status report page.
-    $default_theme = variable_get('theme_default', 'garland');
+    $default_theme = config_get('system.core', 'theme_default');
 
     if (!theme_get_setting('toggle_comment_user_picture', $theme = NULL) && !theme_get_setting('toggle_node_user_picture', $theme = NULL)) {
       $notifications[] = t('Make sure user pictures are enabled in your <a href="@theme-settings">theme</a> settings.', array('@theme-settings' => url('admin/appearance/settings/' . $default_theme)));
     }
 
-    $global_default_image = variable_get('user_picture_default', '');
+    $global_default_image = config_get('system.core', 'user_picture_default');
     if (!$global_default_image) {
       if (gravatar_var('default') == GRAVATAR_DEFAULT_GLOBAL) {
         // Warn if global default user picture is empty and used for default gravatar image.
@@ -71,7 +71,7 @@ function gravatar_requirements($phase) {
     else {
       // Warn if the global default user image exceeds the user picture dimensions.
       $info = function_exists('getimagesize') ? @getimagesize($global_default_image) : array();
-      $dimensions = explode('x', variable_get('user_picture_dimensions', '85x85'));
+      $dimensions = explode('x', config_get('system.core', 'user_picture_dimensions'));
       if ($info && ($info[0] > $dimensions[0] || $info[1] > $dimensions[1])) {
         // @todo Create link to automatically resize image?
         $notifications[] = t('Your <a href="@user-picture-link">global default user picture</a> is too large (@widthx@height pixels) and may not display properly. Please resize it to fit the <a href="@user-picture-settings-link">preferred user picture size</a> (@size pixels).', array('@width' => $info[0], '@height' => $info[1], '@user-picture-link' => $global_default_image, '@user-picture-settings-link' => url('admin/config/people/settings', array('fragment' => 'edit-user-picture-default')), '@size' => implode('x', $dimensions)));
@@ -95,14 +95,14 @@ function gravatar_requirements($phase) {
  * Variable and menu cleanup.
  */
 function gravatar_update_6000() {
-  // Integrate gravatar_defaulttype variable into the gravatar_imagedefault variable.
+  // Integrate gravatar_defaulttype config into the gravatar_imagedefault config.
   if (config_get('gravatar_config.settings', 'gravatar_imagedefault', 2) == 2) {
     $value = (int) config_get('gravatar_config.settings', 'gravatar_default_type', 4);
     config_set('gravatar_config.settings', 'gravatar_imagedefault', $value + 2);
     config_del('gravatar_config.settings', 'gravatar_default_type');
   }
 
-  // Rename gravatar_imagerating variable to gravatar_rating.
+  // Rename gravatar_imagerating config to gravatar_rating.
   if ($value = config_get('gravatar_config.settings', 'gravatar_imagerating', FALSE)) {
     config_set('gravatar_config.settings', 'gravatar_rating', $value);
     config_del('gravatar_config.settings', 'gravatar_imagerating');
