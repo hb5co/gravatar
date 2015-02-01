@@ -41,7 +41,6 @@ function gravatar_admin_settings($form, $form_state) {
     '#default_value' => $gravatar_config->get('gravatar_size'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#element_validate' => array('_element_validate_integer'),
   );
   $form['gravatar_rating'] = array(
     '#type' => 'select',
@@ -79,7 +78,10 @@ function gravatar_admin_settings($form, $form_state) {
     '#default_value' => $gravatar_config->get('gravatar_url_ssl'),
   );
 
-  // Add a submit button
+  // Add validation.
+  $form['#validate'][] = 'gravatar_admin_settings_vaildate';
+
+  // Add a submit button.
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -90,7 +92,18 @@ function gravatar_admin_settings($form, $form_state) {
 }
 
 /**
+ * Implements hook_form_validate().
  *
+ * Validation for admin setting.
+ */
+function gravatar_admin_settings_vaildate($form, &$form_state) {
+  if (!is_numeric($form_state['values']['gravatar_size'])) {
+    form_set_error('gravatar_size', t('Gravatar size must be numeric.'));
+  };
+}
+
+/**
+ * Implements hook_form_submit().
  */
 function gravatar_admin_settings_submit($form, &$form_state) {
   $gravatar_config = config('gravatar_config.settings');
