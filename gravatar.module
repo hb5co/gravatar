@@ -261,7 +261,7 @@ function gravatar_form_comment_form_alter(&$form, $form_state) {
  * @todo Improve message shown to user.
  */
 function gravatar_form_user_profile_form_alter(&$form, $form_state) {
-  if ($form['#user_category'] == 'account' && isset($form['picture']) && config_get('gravatar_user.settings', 'user_pictures') && ($account = $form['#user']) && user_access('use gravatar', $account)) {
+  if (isset($form['picture']) && ($account = $form['#user']) && user_access('use gravatar', $account)) {
     // Add the default user picture preview.
     if (!isset($form['picture']['picture_current']) && ($picture = theme('user_picture', array('account' => $account)))) {
       $form['picture']['picture_current'] = array(
