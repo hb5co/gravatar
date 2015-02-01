@@ -43,7 +43,7 @@ function gravatar_requirements($phase) {
 
   if ($phase == 'runtime') {
     // Warn if picture support is disabled.
-    if (!variable_get('user_pictures', 0)) {
+    if (!config_get('gravatar_user.settings', 'user_pictures')) {
       $notifications[] = t('Make sure <a href="@user-settings-link">user picture support</a> is enabled to allow gravatar integration.', array('@user-settings-link' => url('admin/config/people/settings', array('fragment' => 'edit-user-pictures-0-wrapper'))));
     }
 
@@ -96,28 +96,28 @@ function gravatar_requirements($phase) {
  */
 function gravatar_update_6000() {
   // Integrate gravatar_defaulttype variable into the gravatar_imagedefault variable.
-  if (variable_get('gravatar_imagedefault', 2) == 2) {
-    $value = (int) variable_get('gravatar_default_type', 4);
-    variable_set('gravatar_imagedefault', $value + 2);
-    variable_del('gravatar_default_type');
+  if (config_get('gravatar_config.settings', 'gravatar_imagedefault', 2) == 2) {
+    $value = (int) config_get('gravatar_config.settings', 'gravatar_default_type', 4);
+    config_set('gravatar_config.settings', 'gravatar_imagedefault', $value + 2);
+    config_del('gravatar_config.settings', 'gravatar_default_type');
   }
 
   // Rename gravatar_imagerating variable to gravatar_rating.
-  if ($value = variable_get('gravatar_imagerating', FALSE)) {
-    variable_set('gravatar_rating', $value);
-    variable_del('gravatar_imagerating');
+  if ($value = config_get('gravatar_config.settings', 'gravatar_imagerating', FALSE)) {
+    config_set('gravatar_config.settings', 'gravatar_rating', $value);
+    config_del('gravatar_config.settings', 'gravatar_imagerating');
   }
 
   // Rename gravatar_imagedefault to gravatar_default.
-  if ($value = variable_get('gravatar_imagedefault', FALSE)) {
-    variable_set('gravatar_default', $value);
-    variable_del('gravatar_imagedefault');
+  if ($value = config_get('gravatar_config.settings', 'gravatar_imagedefault', FALSE)) {
+    config_set('gravatar_config.settings', 'gravatar_default', $value);
+    config_del('gravatar_config.settings', 'gravatar_imagedefault');
   }
 
   // Rename gravatar_displaysize to gravatar_size.
-  if ($value = variable_get('gravatar_displaysize', FALSE)) {
-    variable_set('gravatar_size', $value);
-    variable_del('gravatar_displaysize');
+  if ($value = config_get('gravatar_config.settings', 'gravatar_displaysize', FALSE)) {
+    config_set('gravatar_config.settings', 'gravatar_size', $value);
+    config_del('gravatar_config.settings', 'gravatar_displaysize');
   }
 
   // Install cache table.
