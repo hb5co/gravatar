@@ -110,8 +110,8 @@ function gravatar_admin_settings_submit($form, &$form_state) {
   $gravatar_config->set('gravatar_default', $form_state['values']['gravatar_default']);
   $gravatar_config->set('gravatar_size', $form_state['values']['gravatar_size']);
   $gravatar_config->set('gravatar_rating', $form_state['values']['gravatar_rating']);
-  $gravatar_config->set('gravatar_url', $form_state['values']['advanced']['gravatar_url']);
-  $gravatar_config->set('gravatar_url_ssl', $form_state['values']['advanced']['gravatar_url_ssl']);
+  $gravatar_config->set('gravatar_url', $form_state['values']['gravatar_url']);
+  $gravatar_config->set('gravatar_url_ssl', $form_state['values']['gravatar_url_ssl']);
   $gravatar_config->save();
 }
 
