@@ -148,10 +148,10 @@ function gravatar_preprocess_user_picture(&$variables) {
     if (!empty($filepath)) {
       $alt = t("@user's picture", array('@user' => format_username($account)));
       if (module_exists('image') && file_valid_uri($filepath) && $style = config_get('system.core', 'user_picture_style')) {
-        $variables['user_picture'] = theme('image_style', array('style_name' => $style, 'path' => $filepath, 'alt' => $alt, 'title' => $alt));
+        $variables['user_picture'] = theme('image_style', array('style_name' => $style, 'uri' => $filepath, 'alt' => $alt, 'title' => $alt));
       }
       else {
-        $variables['user_picture'] = theme('image', array('path' => $filepath, 'alt' => $alt, 'title' => $alt));
+        $variables['user_picture'] = theme('image', array('uri' => $filepath, 'alt' => $alt, 'title' => $alt));
       }
       if ($account->uid && user_access('access user profiles')) {
         // Create link to the user's profile.
