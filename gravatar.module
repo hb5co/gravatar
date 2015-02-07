@@ -1,6 +1,4 @@
 <?php
-// $Id: gravatar.module,v 1.16.2.4 2011/02/17 19:23:56 davereid Exp $
-
 /**
  * @file
  * Integrates gravatar service for user pictures.
@@ -93,7 +91,6 @@ function gravatar_permission() {
  */
 function gravatar_help($path, $arg) {
   switch ($path) {
-    //case 'admin/help#gravatar':
     case 'admin/config/people/gravatar':
     case 'admin/config/people/settings':
       module_load_install('gravatar');
@@ -129,8 +126,7 @@ function gravatar_config_info() {
 }
 
 /**
- * Override template_preprocess_user_picture() to display user pictures with
- * Gravatar integration.
+ * Override template_preprocess_user_picture() to display user's Gravatar icon.
  *
  * @see template_preprocess_user_picture()
  * @see _gravatar_load_account()
@@ -148,10 +144,19 @@ function gravatar_preprocess_user_picture(&$variables) {
     if (!empty($filepath)) {
       $alt = t("@user's picture", array('@user' => format_username($account)));
       if (module_exists('image') && file_valid_uri($filepath) && $style = config_get('system.core', 'user_picture_style')) {
-        $variables['user_picture'] = theme('image_style', array('style_name' => $style, 'uri' => $filepath, 'alt' => $alt, 'title' => $alt));
+        $variables['user_picture'] = theme('image_style', array(
+          'style_name' => $style,
+          'uri' => $filepath,
+          'alt' => $alt,
+          'title' => $alt)
+        );
       }
       else {
-        $variables['user_picture'] = theme('image', array('uri' => $filepath, 'alt' => $alt, 'title' => $alt));
+        $variables['user_picture'] = theme('image', array(
+          'uri' => $filepath,
+          'alt' => $alt,
+          'title' => $alt)
+        );
       }
       if ($account->uid && user_access('access user profiles')) {
         // Create link to the user's profile.
@@ -173,10 +178,11 @@ function gravatar_preprocess_user_picture(&$variables) {
 /**
  * Decide which user picture should be displayed for a user account.
  *
- * @param $account
- *   A user object.
- * @return
- *   A string with the path to the user's picture.
+ * @param object $account
+ *   User object.
+ *
+ * @return string
+ *   Path to the user's picture.
  */
 function _gravatar_get_account_user_picture($account) {
   if (!empty($account->picture->uri)) {
@@ -209,6 +215,9 @@ function _gravatar_get_account_user_picture($account) {
   }
 }
 
+/**
+ * Load user account.
+ */
 function _gravatar_load_account($account) {
   // If this is a node or comment object, load the user object.
   if (!empty($account->nid) || !empty($account->cid) || empty($account->roles)) {
@@ -296,9 +305,9 @@ function gravatar_user_presave(&$edit, $account, $category) {
 /**
  * Generate a gravatar URL.
  *
- * @param $mail
- *   A string with an e-mail address.
- * @param $options
+ * @param string $mail
+ *   An e-mail address.
+ * @param array $options
  *   An associative array of additional options, with the following keys:
  *   - 'default'
  *     A string with the default gravatar image parameter. Defaults to the
@@ -313,7 +322,8 @@ function gravatar_user_presave(&$edit, $account, $category) {
  *   - 'cache'
  *     A boolean if TRUE, the resulting image will be cached. Defaults to FALSE.
  *     This feature is not yet implemented.
- * @return
+ *
+ * @return string
  *   An URL-encoded string with the gravatar image.
  */
 function gravatar_get_gravatar($mail, $options = array()) {
@@ -330,17 +340,6 @@ function gravatar_get_gravatar($mail, $options = array()) {
 
   $hash = md5(backdrop_strtolower($mail));
 
-  // @todo Implement cache fetching.
-  //if ($options['cache'] && gravatar_var('cache') && valid_email_address($mail)) {
-  //  if ($cached = cache_get($hash, 'gravatar')) {
-  //    return $cached;
-  //  }
-  //  elseif ($data = _gravatar_get_gravatar_image($mail)) {
-  //    cache_set($hash, $data, 'gravatar');
-  //    return $data;
-  //  }
-  //}
-
   $gravatar = $is_https ? config_get('gravatar_config.settings', 'gravatar_url_ssl') : config_get('gravatar_config.settings', 'gravatar_url');
   $gravatar .= $hash . '.jpg';
   $query = array(
@@ -356,9 +355,10 @@ function gravatar_get_gravatar($mail, $options = array()) {
 /**
  * Get the default gravatar image.
  *
- * @param $index
- *   An integer index for selection.
- * @return
+ * @param int $index
+ *   Index for selection.
+ *
+ * @return string
  *   The default image for use in a Gravatar avatar URL.
  */
 function _gravatar_get_default_image($index) {
@@ -374,30 +374,37 @@ function _gravatar_get_default_image($index) {
           $default = file_create_url($default);
         }
         break;
+
       case GRAVATAR_DEFAULT_MODULE:
         $default = $base_url . '/' . backdrop_get_path('module', 'gravatar') . '/avatar.png';
         break;
+
       case GRAVATAR_DEFAULT_MODULE_CLEAR:
         $default = $base_url . '/' . backdrop_get_path('module', 'gravatar') . '/avatar-clear.png';
         break;
+
       case GRAVATAR_DEFAULT_IDENTICON:
         $default = 'identicon';
         break;
+
       case GRAVATAR_DEFAULT_WAVATAR:
         $default = 'wavatar';
         break;
+
       case GRAVATAR_DEFAULT_MONSTERID:
         $default = 'monsterid';
         break;
+
       case GRAVATAR_DEFAULT_LOGO:
-        $default = '';
-        //$default = $base_url . '/' . drupal_get_path('module', 'gravatar') . '/gravatar.jpg';
+        $default = $base_url . '/' . backdrop_get_path('module', 'gravatar') . '/gravatar.jpg';
         break;
+
       case GRAVATAR_DEFAULT_MYSTERY_MAN:
       case GRAVATAR_DEFAULT_RETRO:
       case 404:
         $default = $index;
         break;
+
       default:
         // @todo Remove when stable.
         $default = '';
@@ -413,9 +420,10 @@ function _gravatar_get_default_image($index) {
 /**
  * Fetch a gravatar image.
  *
- * @param $mail
+ * @param string $mail
  *   A string with an e-mail address.
- * @return
+ *
+ * @return string
  *   An image if the e-mail has a gravatar, FALSE otherwise.
  */
 function _gravatar_get_gravatar_image($mail) {

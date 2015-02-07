@@ -1,6 +1,4 @@
 <?php
-// $Id: gravatar.admin.inc,v 1.10.2.1 2011/01/04 20:11:52 davereid Exp $
-
 /**
  * @file
  * Administrative page callbacks for the gravatar module.
@@ -31,7 +29,13 @@ function gravatar_admin_settings($form, $form_state) {
       GRAVATAR_DEFAULT_RETRO => t('Gravatar.com retro 8-bit arcade-style pixelated faces (generated)'),
     ),
     '#default_value' => $gravatar_config->get('gravatar_default'),
-    '#field_prefix' => '<div class="picture js-show">' . theme('image', array('path' => '', 'alt' => t('Default picture example'), 'title' => t('Default picture example'), 'attributes' => array('id' => 'gravatar-imagepreview'), 'getsize' => FALSE)) . '</div>',
+    '#field_prefix' => '<div class="picture js-show">' . theme('image', array(
+      'path' => '',
+      'alt' => t('Default picture example'),
+      'title' => t('Default picture example'),
+      'attributes' => array('id' => 'gravatar-imagepreview'),
+      'getsize' => FALSE)
+    ) . '</div>',
     '#process' => array('form_process_radios', 'gravatar_process_default_setting'),
   );
   $form['gravatar_size'] = array(
@@ -45,12 +49,14 @@ function gravatar_admin_settings($form, $form_state) {
   $form['gravatar_rating'] = array(
     '#type' => 'select',
     '#title' => t('Image maturity filter'),
-    '#description' => theme('item_list', array('items' => array(
-      t('G: Suitable for display on all websites with any audience type.'),
-      t('PG: May contain rude gestures, provocatively dressed individuals, the lesser swear words, or mild violence.'),
-      t('R: May contain such things as harsh profanity, intense violence, nudity, or hard drug use.'),
-      t('X: May contain hardcore sexual imagery or extremely disturbing violence.'),
-    ))),
+    '#description' => theme('item_list', array(
+      'items' => array(
+        t('G: Suitable for display on all websites with any audience type.'),
+        t('PG: May contain rude gestures, provocatively dressed individuals, the lesser swear words, or mild violence.'),
+        t('R: May contain such things as harsh profanity, intense violence, nudity, or hard drug use.'),
+        t('X: May contain hardcore sexual imagery or extremely disturbing violence.'),
+      ))
+    ),
     '#options' => backdrop_map_assoc(array('G', 'PG', 'R', 'X')),
     '#default_value' => $gravatar_config->get('gravatar_rating'),
   );
@@ -134,7 +140,7 @@ function gravatar_process_default_setting($element) {
       'alt' => $choice,
       'title' => $choice,
       'attributes' => array(
-        'id' => 'gravatar-imagepreview-'. $key,
+        'id' => 'gravatar-imagepreview-' . $key,
         // Hide the image if the respective option is disabled.
         'class' => !empty($choice['#disabled']) ? 'hide' : 'js-hide',
       ),
