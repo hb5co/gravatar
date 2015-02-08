@@ -1,2 +1,2 @@
-# gravatar
-Port of the Pathauto module from Drupal 7.
+# Gravatar
+Backrop CMS port of the Gravatar module from Drupal 7.
