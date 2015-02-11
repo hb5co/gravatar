@@ -14,18 +14,6 @@ function gravatar_schema() {
 }
 
 /**
- * Implements hook_uninstall().
- */
-function gravatar_uninstall() {
-  // Remove variables.
-  backdrop_load('module', 'gravatar');
-  $variables = array_keys(gravatar_variables());
-  foreach ($variables as $variable) {
-    variable_del($variable);
-  }
-}
-
-/**
  * Checks requirements for Gravatar.
  */
 function gravatar_check_requirements() {
